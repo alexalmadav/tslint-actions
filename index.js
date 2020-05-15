@@ -92,7 +92,7 @@ const SeverityAnnotationLevelMap = new Map([
             repo: ctx.repo.repo,
             check_run_id: check.data.id,
             name: CHECK_NAME,
-            status: "completed",
+            status: i < chunks.length - 1 ? "in_progress" : "completed",
             conclusion: result.errorCount > 0 ? "failure" : "success",
             output: {
                 title: CHECK_NAME,
