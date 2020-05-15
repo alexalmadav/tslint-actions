@@ -92,9 +92,8 @@ const SeverityAnnotationLevelMap = new Map([
             repo: ctx.repo.repo,
             check_run_id: check.data.id,  
             name: CHECK_NAME,
-            status: i < chunks.length - 1 ? "in_progress" : "completed",
-            conclusion: i < chunks.length - 1 ? null : (result.errorCount > 0 ? "failure" : "success"),
-            output: i < chunks.length - 1 ? null : {
+            status: "in_progress",
+            output: {
                 title: CHECK_NAME,
                 summary: `${result.errorCount} error(s), ${result.warningCount} warning(s) found`,
                 text: common_tags_1.stripIndent `
@@ -119,6 +118,15 @@ const SeverityAnnotationLevelMap = new Map([
             },
         });
     }
+    // send final check update
+    await octokit.checks.update({
+        owner: ctx.repo.owner,
+        repo: ctx.repo.repo,
+        check_run_id: check.data.id,  
+        name: CHECK_NAME,
+        status: "completed",
+        conclusion: result.errorCount > 0 ? "failure" : "success",
+    });
 })().catch((e) => {
     console.error(e.stack); // tslint:disable-line
     core.setFailed(e.message);
