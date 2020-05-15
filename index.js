@@ -90,14 +90,14 @@ const SeverityAnnotationLevelMap = new Map([
         await octokit.checks.update({
             owner: ctx.repo.owner,
             repo: ctx.repo.repo,
-            check_run_id: check.data.id,
+            check_run_id: check.data.id,  
             name: CHECK_NAME,
             status: i < chunks.length - 1 ? "in_progress" : "completed",
-            conclusion: result.errorCount > 0 ? "failure" : "success",
-            output: {
+            conclusion: i < chunks.length - 1 ? null : (result.errorCount > 0 ? "failure" : "success"),
+            output: i < chunks.length - 1 ? null : {
                 title: CHECK_NAME,
                 summary: `${result.errorCount} error(s), ${result.warningCount} warning(s) found`,
-                text: i === 0 ? common_tags_1.stripIndent `
+                text: common_tags_1.stripIndent `
             ## Configuration
 
             #### Actions Input
@@ -114,7 +114,7 @@ const SeverityAnnotationLevelMap = new Map([
             __CONFIG_CONTENT__
             \`\`\`
             </details>
-        `.replace("__CONFIG_CONTENT__", JSON.stringify(tslint_1.Configuration.readConfigurationFile(configFileName), null, 2)): '',
+        `.replace("__CONFIG_CONTENT__", JSON.stringify(tslint_1.Configuration.readConfigurationFile(configFileName), null, 2)),
                 annotations: chunks[i],
             },
         });
